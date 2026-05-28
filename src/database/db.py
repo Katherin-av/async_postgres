@@ -16,9 +16,18 @@ async def init_db():
     """
     global conn_pool
 
+    database_url = os.getenv("DATABASE_URL")
+    if not database_url:
+        error_msg = (
+            "La variable de entorno DATABASE_URL no está configurada. "
+            "Configura DATABASE_URL en Vercel o en un archivo .env local."
+        )
+        logger.error(error_msg)
+        raise RuntimeError(error_msg)
+
     try:
         conn_pool = await asyncpg.create_pool(
-            dsn=os.getenv("DATABASE_URL"),
+            dsn=database_url,
             min_size=1,
             max_size=10,
         )
